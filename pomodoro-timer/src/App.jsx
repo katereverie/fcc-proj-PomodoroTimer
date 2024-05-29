@@ -1,35 +1,39 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const [breakLength, setBreakLength] = useState(5);
+    const [sessionLength, setSessionLength] = useState(25);
+
+
+    return (
+        <>
+            <div className='break-wrapper'>
+                <label id='break-label'>Break Length</label>
+                <div className='btn-wrapper'>
+                    <button id='break-increment'>Break +</button>
+                    <button id='break-decrement'>Break -</button>
+                </div>
+                <div id='break-length'>{breakLength}</div>
+            </div>
+            <div className='session-wrapper'>
+                <label id='session-label'>Session Length</label>
+                <div className='btn-wrapper'>
+                    <button id='session-increment'>Session +</button>
+                    <button id='session-decrement'>Session -</button>
+                </div>
+                <div id='session-length'>{sessionLength}</div>
+            </div>
+            <div className='timer-wrapper'>
+                <label id='timer-label'>Session</label>
+                <div id='time-left'>25:00</div>
+            </div>
+            <button id='start_stop'>Start/Stop</button>
+            <button id='reset'>Reset</button>
+            <audio id='beep'></audio>
+        </>
+    )
 }
 
-export default App
+
