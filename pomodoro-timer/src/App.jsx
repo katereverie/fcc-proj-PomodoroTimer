@@ -8,39 +8,39 @@ export default function App() {
   const [timeLeft, setTimeLeft] = useState(`25:00`);
 
   const decrement = (e) => {
-    // consistent with increment, convert to number
-    const value = Number(e.target.value);
-    if (value === 1 ) return;
-    if (e.target.id === 'break-decrement') setBreakLength(value - 1);
-    if (e.target.id === 'session-decrement') {
-      setSessionLength(() => {
-        const newSessionLength = value - 1;
-        setTimeLeft(`${newSessionLength}:00`);
-        return newSessionLength;
+
+    if (e.target.id === 'break-decrement') setBreakLength(prevBreakLength => {
+      return prevBreakLength === 1? prevBreakLength: prevBreakLength - 1;
+    });
+    if (e.target.id === 'session-decrement') setSessionLength(prevSessionLength => {
+      if (prevSessionLength === 1) return prevSessionLength;
+      const newSessionLength = prevSessionLength - 1;
+      setTimeLeft(`${newSessionLength}:00`);
+      return newSessionLength;
       });
-    }
-      
-    
   }
 
   const increment = (e) => {
-    // conver string value to number
-    const value = Number(e.target.value);
-    if (value === 60) return;
-    if (e.target.id === 'break-increment') setBreakLength(value + 1);
-    if (e.target.id === 'session-increment') {
-      setSessionLength(() => {
-        const newSessionLength = value + 1;
-        setTimeLeft(`${newSessionLength}:00`);
-        return newSessionLength;
-      });
-    }
+    
+    if (e.target.id === 'break-increment') setBreakLength(prevBreakLength => {
+      return prevBreakLength === 60? prevBreakLength: prevBreakLength + 1;
+    });
+    if (e.target.id === 'session-increment') setSessionLength(prevSessionLength => {
+      if (prevSessionLength === 60) return prevSessionLength;
+      const newSessionLength = prevSessionLength + 1;
+      setTimeLeft(`${newSessionLength}:00`);
+      return newSessionLength;
+    });
   }
 
   const reset = () => {
     setBreakLength(5);
     setSessionLength(25);
     setTimeLeft(`25:00`);
+  }
+
+  const handleTimer = () => {
+    console.log(timeLeft);
   }
 
 
@@ -50,24 +50,24 @@ export default function App() {
           <div className='wrapper'>
               <label id='break-label'>Break Length</label>
               <div className='btn-wrapper'>
-                  <button id='break-increment' value={breakLength} onClick={increment}>+</button>
+                  <button id='break-increment' onClick={increment}>+</button>
                   <div id='break-length'>{breakLength}</div>
-                  <button id='break-decrement' value={breakLength} onClick={decrement}>-</button>
+                  <button id='break-decrement' onClick={decrement}>-</button>
               </div>
           </div>
           <div className='wrapper'>
               <label id='session-label'>Session Length</label>
               <div className='btn-wrapper'>
-                  <button id='session-increment' value={sessionLength} onClick={increment}>+</button>
+                  <button id='session-increment' onClick={increment}>+</button>
                   <div id='session-length'>{sessionLength}</div>
-                  <button id='session-decrement' value={sessionLength} onClick={decrement}>-</button>
+                  <button id='session-decrement' onClick={decrement}>-</button>
               </div>
           </div>
         </div>
         <div className='wrapper'>
             <label id='timer-label'>Session</label>
             <div id='time-left'>{timeLeft}</div>
-            <button id='start_stop'>Start/Stop</button>
+            <button id='start_stop' onClick={handleTimer}>Start/Stop</button>
             <button id='reset' onClick={reset}>Reset</button>
             <audio id='beep'></audio>
         </div>
