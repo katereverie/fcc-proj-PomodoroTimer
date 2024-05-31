@@ -1,6 +1,16 @@
 #root {
-  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#app {
+  background-color: tomato;
+  border: 1px solid rgb(253, 30, 0);
+  border-radius: 30% 30% 50% 50%;
+  box-shadow: 0px 4px 4px 1px black;
   max-width: 1280px;
+  min-height: 200px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
@@ -9,23 +19,54 @@
   align-items: center;
 }
 
+#grass-wrapper {
+  display: flex;
+}
+
+.grass {
+  background-color: green;
+  border-radius: 8px 8px 0 0;
+  width: 42px;
+  height: 20px;
+}
+
 #break-session-wrapper {
-  border:  5px solid green ;
-  padding: 5px;
   display: flex;
 }
 
 .wrapper {
-  border: 1px solid red;
-  width: 28
-  0px;
+  width: 156px;
 }
 
 .btn-wrapper {
-  border: 1px solid black;
-  margin: 8px;
+  margin: 4px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
 
+.btn-wrapper button {
+  background-color: white;
+}
+
+#start_stop,
+#reset {
+  width: 68px;
+  margin: 0 4px;
+}
+
+#break-length,
+#session-length,
+#time-left {
+  color: green;
+  font-size: 3em;
+  margin: 8px 8px;
+}
+
+footer > p {
+  font-size: 1.4em;
+}
+#author {
+  font-family: Silkscreen;
+  color: tomato;
 }
