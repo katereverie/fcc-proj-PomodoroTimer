@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
+import { FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import { faPlus, faMinus, faSyncAlt, faPlay, faPause } from '@fortawesome/free-solid-svg-icons';
 import alarm from './assets/audio/clock-alarm.mp3';
 import './assets/styles/App.css'
 
@@ -145,11 +147,11 @@ export default function App() {
                 <label id='break-label'>Break</label>
                 <div className='btn-wrapper'>
                     <button id='break-increment' onClick={increment}>
-                      ?
+                      <FontAwesomeIcon icon={faPlus} />
                     </button>
                     <div id='break-length'>{breakLength}</div>
                     <button id='break-decrement' onClick={decrement}>
-                      ?
+                      <FontAwesomeIcon icon={faMinus} />
                     </button>
                 </div>
             </div>
@@ -157,11 +159,11 @@ export default function App() {
                 <label id='session-label'>Session</label>
                 <div className='btn-wrapper'>
                     <button id='session-increment' onClick={increment}>
-                      ?
+                      <FontAwesomeIcon icon={faPlus} />
                     </button>
                     <div id='session-length'>{sessionLength}</div>
                     <button id='session-decrement' onClick={decrement}>
-                      ?
+                      <FontAwesomeIcon icon={faMinus} />
                     </button>
                 </div>
             </div>
@@ -173,8 +175,10 @@ export default function App() {
               <div id='time-left'>
                 {timeLeft}
               </div>
-              <button id='start_stop' onClick={toggleTimer}>{isRunning? 'Pause': 'Start'}</button>
-              <button id='reset' onClick={reset}>Reset</button>
+              <button id='start_stop' onClick={toggleTimer}>{isRunning? <FontAwesomeIcon icon={faPause} />: <FontAwesomeIcon icon={faPlay} />}</button>
+              <button id='reset' onClick={reset}>
+                <FontAwesomeIcon icon={faSyncAlt} />
+              </button>
               <audio id='beep' ref={audioRef} src={alarm} />
           </div>
         </div>
