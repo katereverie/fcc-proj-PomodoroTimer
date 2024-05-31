@@ -12,12 +12,12 @@ export default function App() {
   const [isSessionRunning, setIsSessionRunning] = useState(true);
   const audioRef = useRef(null);
 
-  const timeLeft = `${minutes < 10? '0'+minutes: minutes}:${seconds < 10? '0'+ seconds: seconds}`;
+  const timeLeft = `${minutes < 10? '0'+ minutes: minutes}:${seconds < 10? '0'+ seconds: seconds}`;
 
   useEffect(() => {
 
     const enterBreak = () => {
-      // set break session after 2s.
+      // set break session after 4s.
       setTimeout(() => {
         setMinutes(breakLength);
         setSeconds(0);
@@ -45,8 +45,6 @@ export default function App() {
         } else if (seconds === 0 && minutes !== 0) {
           setSeconds(59);
           setMinutes(prevMinutes => prevMinutes - 1);
-        } else if (seconds !== 0 && minutes === 0) {
-          setSeconds(prevSeconds => prevSeconds - 1);
         } else {
           setSeconds(prevSeconds => prevSeconds - 1);
         }
@@ -64,9 +62,10 @@ export default function App() {
     if (isRunning) return;
     
     if (e.target.id === 'break-increment') {
-      if (breakLength === 60) return;
       setBreakLength(prevBreakLength => {
+        if (breakLength === 60) return 60;
         const newBreakLength = prevBreakLength + 1;
+        if (isSessionRunning) return newBreakLength; // if it's not a break session, do not update minutes
         setMinutes(newBreakLength);
         setSeconds(0);
         return newBreakLength;
@@ -74,9 +73,10 @@ export default function App() {
     }
 
     if (e.target.id === 'session-increment') {
-      if (sessionLength === 60) return;
       setSessionLength(prevSessionLength => {
+        if (sessionLength === 60) return 60;
         const newSessionLength = prevSessionLength + 1;
+        if (isBreakRunning) return newSessionLength; // if it's a break session, do not update minutes;
         setMinutes(newSessionLength);
         setSeconds(0);
         return newSessionLength;
@@ -92,9 +92,10 @@ export default function App() {
     if (isRunning) return;
 
     if (e.target.id === 'break-decrement') {
-      if (breakLength === 1) return;
       setBreakLength(prevBreakLength => {
+        if (prevBreakLength === 1) return 1;
         const newBreakLength = prevBreakLength - 1;
+        if (isSessionRunning) return newBreakLength; 
         setMinutes(newBreakLength);
         setSeconds(0);
         return newBreakLength;
@@ -102,9 +103,10 @@ export default function App() {
     }
 
     if (e.target.id === 'session-decrement') {
-      if (sessionLength === 1) return;
       setSessionLength(prevSessionLength => {
+        if (prevSessionLength === 1) return 1;
         const newSessionLength = prevSessionLength - 1;
+        if (isBreakRunning) return newSessionLength;
         setMinutes(newSessionLength);
         setSeconds(0);
         return newSessionLength;
@@ -133,35 +135,52 @@ export default function App() {
 
   return (
       <>
-        <div id='break-session-wrapper'>
-          <div className='wrapper'>
-              <label id='break-label'>Break Length</label>
-              <div className='btn-wrapper'>
-                  <button id='break-increment' onClick={increment}>+</button>
-                  <div id='break-length'>{breakLength}</div>
-                  <button id='break-decrement' onClick={decrement}>-</button>
-              </div>
-          </div>
-          <div className='wrapper'>
-              <label id='session-label'>Session Length</label>
-              <div className='btn-wrapper'>
-                  <button id='session-increment' onClick={increment}>+</button>
-                  <div id='session-length'>{sessionLength}</div>
-                  <button id='session-decrement' onClick={decrement}>-</button>
-              </div>
-          </div>
-        </div>
-        <div className='wrapper'>
-            <label id='timer-label'>
-              {isSessionRunning? 'Session': 'Break'}
-            </label>
-            <div id='time-left'>
-              {timeLeft}
+        <header>
+          <h1>Pomodoro Timer</h1>
+        </header>
+        <div className='grass'></div>
+        <div id='app'>
+          <div id='break-session-wrapper'>
+            <div className='wrapper'>
+                <label id='break-label'>Break</label>
+                <div className='btn-wrapper'>
+                    <button id='break-increment' onClick={increment}>
+                      ?
+                    </button>
+                    <div id='break-length'>{breakLength}</div>
+                    <button id='break-decrement' onClick={decrement}>
+                      ?
+                    </button>
+                </div>
             </div>
-            <button id='start_stop' onClick={toggleTimer}>{isRunning? 'Pause': 'Start'}</button>
-            <button id='reset' onClick={reset}>Reset</button>
-            <audio id='beep' ref={audioRef} src={alarm} />
+            <div className='wrapper'>
+                <label id='session-label'>Session</label>
+                <div className='btn-wrapper'>
+                    <button id='session-increment' onClick={increment}>
+                      ?
+                    </button>
+                    <div id='session-length'>{sessionLength}</div>
+                    <button id='session-decrement' onClick={decrement}>
+                      ?
+                    </button>
+                </div>
+            </div>
+          </div>
+          <div className='wrapper'>
+              <label id='timer-label'>
+                {isSessionRunning? 'Session': 'Break'}
+              </label>
+              <div id='time-left'>
+                {timeLeft}
+              </div>
+              <button id='start_stop' onClick={toggleTimer}>{isRunning? 'Pause': 'Start'}</button>
+              <button id='reset' onClick={reset}>Reset</button>
+              <audio id='beep' ref={audioRef} src={alarm} />
+          </div>
         </div>
+        <footer>
+          <p>&copy; {new Date().getFullYear()} <a href='https://github.com/Katereverie'><span id='author'>Katereverie</span></a></p>
+        </footer>
       </>
   )
 }
