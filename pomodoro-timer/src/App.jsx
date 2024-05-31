@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import './App.css'
+import { useState, useEffect, useRef } from 'react'
+import alarm from './assets/audio/clock-alarm.mp3';
+import './assets/styles/App.css'
 
 export default function App() {
   const [breakLength, setBreakLength] = useState(5);
@@ -7,18 +8,79 @@ export default function App() {
   const [minutes, setMinutes] = useState(25);
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
+  const [isBreakRunning, setIsBreakRunning] = useState(false);
+  const [isSessionRunning, setIsSessionRunning] = useState(true);
+  const audioRef = useRef(null);
+
+  const timeLeft = `${minutes < 10? '0'+minutes: minutes}:${seconds < 10? '0'+ seconds: seconds}`;
+
+  useEffect(() => {
+
+    const enterBreak = () => {
+      // set break session after 2s.
+      setTimeout(() => {
+        setMinutes(breakLength);
+        setSeconds(0);
+        setIsSessionRunning(!isSessionRunning);
+        setIsBreakRunning(!isBreakRunning);
+      }, 5000);
+    }
+  
+    const enterSession = () => {
+      setTimeout(() => {
+        setMinutes(sessionLength);
+        setSeconds(0);
+        setIsBreakRunning(!isBreakRunning);
+        setIsSessionRunning(!isSessionRunning);
+      }, 5000)
+    }
+    
+    let timeoutId;
+    // use timeout to update timeleft every second
+    if (isRunning) {
+      timeoutId = setTimeout(() => {
+        if (seconds === 0 && minutes === 0) {
+          audioRef.current.play();
+          isSessionRunning? enterBreak(): enterSession();
+        } else if (seconds === 0 && minutes !== 0) {
+          setSeconds(59);
+          setMinutes(prevMinutes => prevMinutes - 1);
+        } else if (seconds !== 0 && minutes === 0) {
+          setSeconds(prevSeconds => prevSeconds - 1);
+        } else {
+          setSeconds(prevSeconds => prevSeconds - 1);
+        }
+      }, 1000);
+    } else {
+      return;
+    }
+    // cleanup function clear the timeout if the component unmounts
+    return () => clearTimeout(timeoutId);
+
+  }, [minutes, seconds, breakLength, sessionLength, isRunning, isBreakRunning, isSessionRunning])
 
   const increment = (e) => {
+
+    if (isRunning) return;
     
     if (e.target.id === 'break-increment') {
       if (breakLength === 60) return;
-      setBreakLength(breakLength => breakLength + 1);
+      setBreakLength(prevBreakLength => {
+        const newBreakLength = prevBreakLength + 1;
+        setMinutes(newBreakLength);
+        setSeconds(0);
+        return newBreakLength;
+      })
     }
 
     if (e.target.id === 'session-increment') {
       if (sessionLength === 60) return;
-      setSessionLength(sessionLength => sessionLength + 1);
-      setMinutes(minutes => minutes + 1);
+      setSessionLength(prevSessionLength => {
+        const newSessionLength = prevSessionLength + 1;
+        setMinutes(newSessionLength);
+        setSeconds(0);
+        return newSessionLength;
+      })
     }
 
     return;
@@ -26,15 +88,27 @@ export default function App() {
   }
 
   const decrement = (e) => {
+
+    if (isRunning) return;
+
     if (e.target.id === 'break-decrement') {
       if (breakLength === 1) return;
-      setBreakLength(breakLength => breakLength - 1);
+      setBreakLength(prevBreakLength => {
+        const newBreakLength = prevBreakLength - 1;
+        setMinutes(newBreakLength);
+        setSeconds(0);
+        return newBreakLength;
+      })
     }
 
     if (e.target.id === 'session-decrement') {
       if (sessionLength === 1) return;
-      setSessionLength(sessionLength => sessionLength - 1);
-      setMinutes(minutes => minutes - 1);
+      setSessionLength(prevSessionLength => {
+        const newSessionLength = prevSessionLength - 1;
+        setMinutes(newSessionLength);
+        setSeconds(0);
+        return newSessionLength;
+      })
     }
 
     return;
@@ -45,11 +119,15 @@ export default function App() {
   }
 
   const reset = () => {
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
     setMinutes(25);
     setSeconds(0);
     setSessionLength(25);
     setBreakLength(5);
     setIsRunning(false);
+    setIsBreakRunning(false);
+    setIsSessionRunning(true);
   }
   
 
@@ -74,13 +152,15 @@ export default function App() {
           </div>
         </div>
         <div className='wrapper'>
-            <label id='timer-label'>Session</label>
+            <label id='timer-label'>
+              {isSessionRunning? 'Session': 'Break'}
+            </label>
             <div id='time-left'>
-              {minutes < 10? '0'+minutes: minutes}:{seconds < 10? '0'+ seconds: seconds}
+              {timeLeft}
             </div>
             <button id='start_stop' onClick={toggleTimer}>{isRunning? 'Pause': 'Start'}</button>
             <button id='reset' onClick={reset}>Reset</button>
-            <audio id='beep'></audio>
+            <audio id='beep' ref={audioRef} src={alarm} />
         </div>
       </>
   )
