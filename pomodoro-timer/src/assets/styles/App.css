@@ -6,13 +6,13 @@
 
 #app {
   background-color: tomato;
-  border: 1px solid rgb(253, 30, 0);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 30% 30% 50% 50%;
-  box-shadow: 0px 4px 4px 1px black;
+  box-shadow: 4px 4px 1px 1px black;
   max-width: 1280px;
   min-height: 200px;
   margin: 0 auto;
-  padding: 2rem;
+  
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -25,41 +25,56 @@
 
 .grass {
   background-color: green;
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 8px 8px 0 0;
+  box-shadow: 4px 4px 1px 1px black;
   width: 42px;
   height: 20px;
 }
 
-#break-session-wrapper {
-  display: flex;
+
+.setter-wrapper {
+  display: flex; 
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.wrapper {
-  width: 156px;
+.timer-wrapper {
+  display: flex;
+  flex-direction: column;
 }
 
 .btn-wrapper {
-  margin: 4px;
+  margin: 12px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
 
-.btn-wrapper button {
-  background-color: white;
+#break-label {
+  margin-top: 24px;
 }
 
-#start_stop,
-#reset {
-  width: 68px;
-  margin: 0 4px;
+
+#break-label::before,
+#break-label::after {
+  content: '-----';
+}
+#session-label::before,
+#session-label::after {
+  content: '------';
+}
+#timer-label::before,
+#timer-label::after {
+  content: '-----------';
 }
 
 #break-length,
 #session-length,
 #time-left {
   color: green;
-  font-size: 3em;
+  font-size: 1.5em;
   margin: 8px 8px;
 }
 

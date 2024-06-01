@@ -1,7 +1,6 @@
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  font-weight: 400;
 
   color-scheme: light dark;
 
@@ -25,24 +24,38 @@ body {
 }
 
 label {
-  color: white;
+  color: yellow;
   font-weight: 600;
-  font-size: 1.3em;
+  font-size: 1.2em;
+}
+label::before,
+label::after {
+  margin: 4px;
 }
 
 button {
+  width: 32px;
   border-radius: 8px;
-  border: 1px solid rgb(148, 148, 148);
-  padding: 0.6em 1.2em;
+  padding: 0.3em 0;
+  margin: 0 12px;
   font-weight: 600;
-  font-family: inherit;
   cursor: pointer;
 }
 button:hover {
-  border-color: red;
+  border-color: tomato;
+}
+button:active {
+  transform: translate(1px, 1px);
+}
+
+h1 {
+  text-shadow: 4px 4px 1px black;
+  color: tomato;
 }
 
 a {
+  padding: 4px 8px;
+  border-radius: 10px;
   text-decoration: none;
   transition: ease 0.5s;
 }
