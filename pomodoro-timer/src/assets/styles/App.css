@@ -67,7 +67,7 @@
 }
 #timer-label::before,
 #timer-label::after {
-  content: '-----------';
+  content: '----------';
 }
 
 #break-length,
