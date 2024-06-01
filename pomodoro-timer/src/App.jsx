@@ -1,17 +1,18 @@
 import { useState, useEffect, useRef } from 'react'
-import { FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import { faPlus, faMinus, faSyncAlt, faPlay, faPause } from '@fortawesome/free-solid-svg-icons';
 import alarm from './assets/audio/clock-alarm.mp3';
+import SetterWrapper from './SetterWrapper';
+import Timer from './Timer';
 import './assets/styles/App.css'
 
-export default function App() {
+export default function App () {
   const [breakLength, setBreakLength] = useState(5);
   const [sessionLength, setSessionLength] = useState(25);
   const [minutes, setMinutes] = useState(25);
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [isBreakRunning, setIsBreakRunning] = useState(false);
-  const [isSessionRunning, setIsSessionRunning] = useState(true);
+  const [isBreakShowing, setisBreakShowing] = useState(false);
+  const [isSessionShowing, setisSessionShowing] = useState(true);
+
   const audioRef = useRef(null);
 
   const timeLeft = `${minutes < 10? '0'+ minutes: minutes}:${seconds < 10? '0'+ seconds: seconds}`;
@@ -19,21 +20,21 @@ export default function App() {
   useEffect(() => {
 
     const enterBreak = () => {
-      // set break session after 4s.
+      // set break session after 5s.
       setTimeout(() => {
         setMinutes(breakLength);
         setSeconds(0);
-        setIsSessionRunning(!isSessionRunning);
-        setIsBreakRunning(!isBreakRunning);
+        setisSessionShowing(!isSessionShowing);
+        setisBreakShowing(!isBreakShowing);
       }, 5000);
     }
-  
+    // set break session after 5s.
     const enterSession = () => {
       setTimeout(() => {
         setMinutes(sessionLength);
         setSeconds(0);
-        setIsBreakRunning(!isBreakRunning);
-        setIsSessionRunning(!isSessionRunning);
+        setisBreakShowing(!isBreakShowing);
+        setisSessionShowing(!isSessionShowing);
       }, 5000)
     }
     
@@ -43,7 +44,7 @@ export default function App() {
       timeoutId = setTimeout(() => {
         if (seconds === 0 && minutes === 0) {
           audioRef.current.play();
-          isSessionRunning? enterBreak(): enterSession();
+          isSessionShowing? enterBreak(): enterSession();
         } else if (seconds === 0 && minutes !== 0) {
           setSeconds(59);
           setMinutes(prevMinutes => prevMinutes - 1);
@@ -57,72 +58,57 @@ export default function App() {
     // cleanup function clear the timeout if the component unmounts
     return () => clearTimeout(timeoutId);
 
-  }, [minutes, seconds, breakLength, sessionLength, isRunning, isBreakRunning, isSessionRunning])
+  }, [minutes, seconds, breakLength, sessionLength, isRunning, isBreakShowing, isSessionShowing])
 
-  const increment = (e) => {
+  const updateLength = (type, increment, isShowing) => {
+    const setter = type === 'break'? setBreakLength : setSessionLength;
+    // const length = type === 'break'? breakLength : sessionLength;
 
+    setter(prevLength => {
+      const newLength = increment? prevLength + 1: prevLength - 1;
+      // prevent edge cases where length goes below 1 or above 60
+      if (newLength < 1 || newLength > 60) return prevLength;
+
+      if (isShowing) return newLength;
+      setMinutes(newLength);
+      setSeconds(0);
+      return newLength;
+    })
+  }
+
+
+  const handleIncrement = (e) => {
+    // if timer is running, prohibit updating break/session length
     if (isRunning) return;
     
-    if (e.target.id === 'break-increment') {
-      setBreakLength(prevBreakLength => {
-        if (breakLength === 60) return 60;
-        const newBreakLength = prevBreakLength + 1;
-        if (isSessionRunning) return newBreakLength; // if it's not a break session, do not update minutes
-        setMinutes(newBreakLength);
-        setSeconds(0);
-        return newBreakLength;
-      })
+    const buttonId = e.currentTarget.id;
+    if (buttonId === 'break-increment') {
+      updateLength('break', true, isSessionShowing);
+    } else if (buttonId === 'session-increment') {
+      updateLength('session', true, isBreakShowing);
     }
-
-    if (e.target.id === 'session-increment') {
-      setSessionLength(prevSessionLength => {
-        if (sessionLength === 60) return 60;
-        const newSessionLength = prevSessionLength + 1;
-        if (isBreakRunning) return newSessionLength; // if it's a break session, do not update minutes;
-        setMinutes(newSessionLength);
-        setSeconds(0);
-        return newSessionLength;
-      })
-    }
-
     return;
+  };
 
-  }
-
-  const decrement = (e) => {
-
+  const handleDecrement = (e) => {
+    // if timer is running, prohibit updating break/session length
     if (isRunning) return;
 
-    if (e.target.id === 'break-decrement') {
-      setBreakLength(prevBreakLength => {
-        if (prevBreakLength === 1) return 1;
-        const newBreakLength = prevBreakLength - 1;
-        if (isSessionRunning) return newBreakLength; 
-        setMinutes(newBreakLength);
-        setSeconds(0);
-        return newBreakLength;
-      })
+    const buttonId = e.currentTarget.id;
+    
+    if (buttonId === 'break-decrement') {
+      updateLength('break', false, isSessionShowing);
+    } else if (buttonId === 'session-decrement') {
+      updateLength('session', false, isBreakShowing);
     }
-
-    if (e.target.id === 'session-decrement') {
-      setSessionLength(prevSessionLength => {
-        if (prevSessionLength === 1) return 1;
-        const newSessionLength = prevSessionLength - 1;
-        if (isBreakRunning) return newSessionLength;
-        setMinutes(newSessionLength);
-        setSeconds(0);
-        return newSessionLength;
-      })
-    }
-
     return;
   }
 
-  const toggleTimer = () => {
+  const handleToggleTimer = () => {
     setIsRunning(prevState => !prevState);
   }
 
-  const reset = () => {
+  const handleReset = () => {
     audioRef.current.pause();
     audioRef.current.currentTime = 0;
     setMinutes(25);
@@ -130,60 +116,58 @@ export default function App() {
     setSessionLength(25);
     setBreakLength(5);
     setIsRunning(false);
-    setIsBreakRunning(false);
-    setIsSessionRunning(true);
+    setisBreakShowing(false);
+    setisSessionShowing(true);
   }
-  
-
   return (
       <>
         <header>
-          <h1>Pomodoro Timer</h1>
+          <h1>Carrot Timer</h1>
         </header>
         <div className='grass'></div>
         <div id='app'>
-          <div id='break-session-wrapper'>
-            <div className='wrapper'>
-                <label id='break-label'>Break</label>
-                <div className='btn-wrapper'>
-                    <button id='break-increment' onClick={increment}>
-                      <FontAwesomeIcon icon={faPlus} />
-                    </button>
-                    <div id='break-length'>{breakLength}</div>
-                    <button id='break-decrement' onClick={decrement}>
-                      <FontAwesomeIcon icon={faMinus} />
-                    </button>
-                </div>
-            </div>
-            <div className='wrapper'>
-                <label id='session-label'>Session</label>
-                <div className='btn-wrapper'>
-                    <button id='session-increment' onClick={increment}>
-                      <FontAwesomeIcon icon={faPlus} />
-                    </button>
-                    <div id='session-length'>{sessionLength}</div>
-                    <button id='session-decrement' onClick={decrement}>
-                      <FontAwesomeIcon icon={faMinus} />
-                    </button>
-                </div>
-            </div>
-          </div>
-          <div className='wrapper'>
-              <label id='timer-label'>
-                {isSessionRunning? 'Session': 'Break'}
-              </label>
-              <div id='time-left'>
-                {timeLeft}
-              </div>
-              <button id='start_stop' onClick={toggleTimer}>{isRunning? <FontAwesomeIcon icon={faPause} />: <FontAwesomeIcon icon={faPlay} />}</button>
-              <button id='reset' onClick={reset}>
-                <FontAwesomeIcon icon={faSyncAlt} />
-              </button>
-              <audio id='beep' ref={audioRef} src={alarm} />
-          </div>
+          <SetterWrapper 
+            labelId='break-label' 
+            labelContent='Break Length' 
+            displayId='break-length' 
+            displayContent={breakLength}
+            buttonIncrementId='break-increment'
+            buttonDecrementId='break-decrement'
+            handleIncrement={handleIncrement}
+            handleDecrement={handleDecrement}
+          />
+          <SetterWrapper 
+            labelId='session-label'
+            labelContent='Session Length'
+            displayId='session-length'
+            displayContent={sessionLength}
+            buttonIncrementId='session-increment'
+            buttonDecrementId='session-decrement'
+            handleIncrement={handleIncrement}
+            handleDecrement={handleDecrement}
+          />
+          <Timer 
+            labelId='timer-label'
+            labelContent={isSessionShowing? 'Session': 'Break'}
+            displayId='time-left'
+            displayContent={timeLeft}
+            buttonResetId='reset'
+            buttonStartPauseId='start_stop'
+            isTimerRunning={isRunning}
+            handleReset={handleReset}
+            handleToggleTimer={handleToggleTimer}
+          >
+            <audio id='beep' ref={audioRef} src={alarm} />
+          </Timer> 
         </div>
         <footer>
-          <p>&copy; {new Date().getFullYear()} <a href='https://github.com/Katereverie'><span id='author'>Katereverie</span></a></p>
+          <p>
+            &copy; 
+            {new Date().getFullYear()}
+            <a href='https://github.com/Katereverie'>
+              <span id='author'>Katereverie</span>
+            </a>
+          </p>
         </footer>
       </>
   )
