@@ -16,7 +16,6 @@ body {
   background-color: gold;
   margin: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-width: 320px;
@@ -42,7 +41,7 @@ button {
   cursor: pointer;
 }
 button:hover {
-  border-color: tomato;
+  border-color: rgb(255, 99, 71);
 }
 button:active {
   transform: translate(1px, 1px);
@@ -50,7 +49,7 @@ button:active {
 
 h1 {
   text-shadow: 4px 4px 1px black;
-  color: tomato;
+  color: rgb(255, 99, 71);
 }
 
 a {
@@ -61,8 +60,8 @@ a {
 }
 a:hover{
   cursor: pointer;
-  background-color: white;
-  box-shadow: 0 0 8px white;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 0 8px rgb(255, 255, 255);
   transition: ease 0.5s;
 }
 
@@ -73,9 +72,9 @@ p {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    background-color: rgb(255, 255, 255);
   }
   button {
-    background-color: #f9f9f9;
+    background-color: rgb(249, 249, 249);
   }
 }
