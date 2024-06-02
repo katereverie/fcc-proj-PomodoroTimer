@@ -154,6 +154,7 @@ export default function App () {
             buttonResetId='reset'
             buttonStartPauseId='start_stop'
             isTimerRunning={isRunning}
+            minutesLeft={minutes}
             handleReset={handleReset}
             handleToggleTimer={handleToggleTimer}
           >
